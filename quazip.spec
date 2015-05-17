@@ -1,3 +1,8 @@
+#
+# Conditional build:
+%bcond_without	qt4		# build Qt4
+%bcond_without	qt5		# build Qt5
+
 Summary:	Qt/C++ wrapper for the minizip library
 Name:		quazip
 Version:	0.7.1
@@ -11,8 +16,12 @@ URL:		http://quazip.sourceforge.net/
 BuildRequires:	cmake
 BuildRequires:	doxygen
 BuildRequires:	graphviz
+%if %{with qt4}
 BuildRequires:	qt4-build
+%endif
+%if %{with qt5}
 BuildRequires:	qt5-build
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -68,19 +77,23 @@ documentation for developing applications that use %{name}.
 
 %build
 install -d build-qt{4,5}
+%if %{with qt4}
 cd build-qt4
 %cmake \
 	-DBUILD_WITH_QT4:BOOL=ON \
 	..
 %{__make}
 cd ..
+%endif
 
+%if %{with qt4}
 cd build-qt5
 %cmake \
 	-DBUILD_WITH_QT4:BOOL=OFF \
 	..
 %{__make}
 cd ..
+%endif
 
 doxygen Doxyfile
 for file in doc/html/*; do
@@ -89,10 +102,14 @@ done
 
 %install
 rm -rf $RPM_BUILD_ROOT
+%if %{with qt4}
 %{__make} -C build-qt5 install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
+%endif
+%if %{with qt5}
 %{__make} -C build-qt4 install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -100,6 +117,10 @@ rm -rf $RPM_BUILD_ROOT
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
+%post	qt5 -p /sbin/ldconfig
+%postun	qt5 -p /sbin/ldconfig
+
+%if %{with qt4}
 %files
 %defattr(644,root,root,755)
 %doc COPYING NEWS.txt README.txt
@@ -112,7 +133,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libquazip.so
 %{_includedir}/quazip
 %{_datadir}/cmake/Modules/FindQuaZip.cmake
+%endif
 
+%if %{with qt4}
 %files qt5
 %defattr(644,root,root,755)
 %doc COPYING NEWS.txt README.txt
@@ -125,3 +148,4 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libquazip5.so
 %{_includedir}/quazip5
 %{_datadir}/cmake/Modules/FindQuaZip5.cmake
+%endif
