@@ -16,11 +16,17 @@ URL:		http://quazip.sourceforge.net/
 BuildRequires:	cmake
 BuildRequires:	doxygen
 BuildRequires:	graphviz
+BuildRequires:	libstdc++-devel
 %if %{with qt4}
+BuildRequires:	QtCore-devel
+BuildRequires:	QtGui-devel
 BuildRequires:	qt4-build
+BuildRequires:	qt4-qmake
 %endif
 %if %{with qt5}
+BuildRequires:	Qt5Core-devel
 BuildRequires:	qt5-build
+BuildRequires:	qt5-qmake
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -86,7 +92,7 @@ cd build-qt4
 cd ..
 %endif
 
-%if %{with qt4}
+%if %{with qt5}
 cd build-qt5
 %cmake \
 	-DBUILD_WITH_QT4:BOOL=OFF \
@@ -103,11 +109,11 @@ done
 %install
 rm -rf $RPM_BUILD_ROOT
 %if %{with qt4}
-%{__make} -C build-qt5 install/fast \
+%{__make} -C build-qt4 install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
 %endif
 %if %{with qt5}
-%{__make} -C build-qt4 install/fast \
+%{__make} -C build-qt5 install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
 %endif
 
@@ -135,7 +141,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/cmake/Modules/FindQuaZip.cmake
 %endif
 
-%if %{with qt4}
+%if %{with qt5}
 %files qt5
 %defattr(644,root,root,755)
 %doc COPYING NEWS.txt README.txt
