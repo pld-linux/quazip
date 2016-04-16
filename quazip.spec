@@ -121,8 +121,8 @@ aplikacji wykorzystujących QuaZIP wraz z Qt 5.
 install -d build-qt{4,5}
 %if %{with qt4}
 cd build-qt4
+export CXXFLAGS="%{rpmcxxflags} -fPIC"
 %cmake \
-	CXXFLAGS="%{rpmcxxflags} -fPIC" \
 	-DBUILD_WITH_QT4:BOOL=ON \
 	..
 %{__make}
