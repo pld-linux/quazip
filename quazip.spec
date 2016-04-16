@@ -6,13 +6,12 @@
 Summary:	Qt/C++ wrapper for the minizip library
 Summary(pl.UTF-8):	Obudowanie Qt/C++ do biblioteki minizip
 Name:		quazip
-Version:	0.7.1
+Version:	0.7.2
 Release:	1
 License:	GPL v2+ or LGPL v2+
 Group:		X11/Libraries
 Source0:	http://downloads.sourceforge.net/quazip/%{name}-%{version}.tar.gz
-# Source0-md5:	3b99effb2a9417707d463e6f19cf2629
-Patch1:		qt5.patch
+# Source0-md5:	84163487a4c3470781c93e5f56c4ca43
 URL:		http://quazip.sourceforge.net/
 BuildRequires:	cmake >= 2.6
 BuildRequires:	doxygen
@@ -117,7 +116,6 @@ aplikacji wykorzystujących QuaZIP wraz z Qt 5.
 
 %prep
 %setup -q
-%patch1 -p1
 
 %build
 install -d build-qt{4,5}
