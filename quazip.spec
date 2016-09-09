@@ -70,6 +70,18 @@ developing applications that use QuaZIP with Qt 4.
 Ten pakiet zawiera pliki nagłówkowe oraz dokumentację do tworzenia
 aplikacji wykorzystujących QuaZIP wraz z Qt 4.
 
+%package static
+Summary:	Static QuaZIP library (Qt 4 version)
+Summary(pl.UTF-8):	Statyczna biblioteka QuaZIP (wersja dla Qt 4)
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static QuaZIP library (Qt 4 version).
+
+%description static -l pl.UTF-8
+Statyczna biblioteka QuaZIP (wersja dla Qt 4).
+
 %package qt5
 Summary:	Qt 5/C++ wrapper for the minizip library
 Summary(pl.UTF-8):	Obudowanie Qt 5/C++ do biblioteki minizip
@@ -113,6 +125,18 @@ developing applications that use QuaZIP with Qt 5.
 %description qt5-devel -l pl.UTF-8
 Ten pakiet zawiera pliki nagłówkowe oraz dokumentację do tworzenia
 aplikacji wykorzystujących QuaZIP wraz z Qt 5.
+
+%package qt5-static
+Summary:	Static QuaZIP library (Qt 5 version)
+Summary(pl.UTF-8):	Statyczna biblioteka QuaZIP (wersja dla Qt 5)
+Group:		Development/Libraries
+Requires:	%{name}-qt5-devel = %{version}-%{release}
+
+%description qt5-static
+Static QuaZIP library (Qt 5 version).
+
+%description qt5-static -l pl.UTF-8
+Statyczna biblioteka QuaZIP (wersja dla Qt 5).
 
 %prep
 %setup -q
@@ -176,6 +200,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libquazip.so
 %{_includedir}/quazip
 %{_datadir}/cmake/Modules/FindQuaZip.cmake
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libquazip.a
 %endif
 
 %if %{with qt5}
@@ -191,4 +219,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libquazip5.so
 %{_includedir}/quazip5
 %{_datadir}/cmake/Modules/FindQuaZip5.cmake
+
+%files qt5-static
+%defattr(644,root,root,755)
+%{_libdir}/libquazip5.a
 %endif
