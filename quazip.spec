@@ -1,19 +1,23 @@
+# TODO:
+# - test or remove Qt 4 version
+# - compile static library if needed
 #
 # Conditional build:
-%bcond_without	qt4		# Qt 4 version
+%bcond_with	qt4		# Qt 4 version
 %bcond_without	qt5		# Qt 5 version
 
 Summary:	Qt/C++ wrapper for the minizip library
 Summary(pl.UTF-8):	Obudowanie Qt/C++ do biblioteki minizip
 Name:		quazip
-Version:	0.7.2
-Release:	2
+Version:	1.3
+Release:	1
 License:	GPL v2+ or LGPL v2+
 Group:		X11/Libraries
-Source0:	http://downloads.sourceforge.net/quazip/%{name}-%{version}.tar.gz
-# Source0-md5:	84163487a4c3470781c93e5f56c4ca43
-URL:		http://quazip.sourceforge.net/
-BuildRequires:	cmake >= 2.6
+Source0:	https://github.com/stachenov/quazip/archive/v%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	52b45020f8153a45920cd572d777c6a7
+Patch0:		cmake.patch
+URL:		https://stachenov.github.io/quazip/
+BuildRequires:	cmake >= 3.15
 BuildRequires:	doxygen
 BuildRequires:	graphviz
 BuildRequires:	libstdc++-devel
@@ -140,6 +144,7 @@ Statyczna biblioteka QuaZIP (wersja dla Qt 5).
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 install -d build-qt{4,5}
@@ -190,16 +195,17 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with qt4}
 %files
 %defattr(644,root,root,755)
-%doc COPYING NEWS.txt README.txt
-%attr(755,root,root) %{_libdir}/libquazip.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libquazip.so.1
+%doc COPYING NEWS.txt README.md
+%attr(755,root,root) %{_libdir}/libquazip1-qt4.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libquazip1-qt4.so.1.3
 
 %files devel
 %defattr(644,root,root,755)
 %doc doc/html
-%attr(755,root,root) %{_libdir}/libquazip.so
-%{_includedir}/quazip
-%{_datadir}/cmake/Modules/FindQuaZip.cmake
+%attr(755,root,root) %{_libdir}/libquazip1-qt4.so
+%{_includedir}/QuaZip-Qt4-1.3
+%{_libdir}/cmake/QuaZip-Qt4-1.3
+%{_pkgconfigdir}/quazip1-qt4.pc
 
 %files static
 %defattr(644,root,root,755)
@@ -209,18 +215,21 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with qt5}
 %files qt5
 %defattr(644,root,root,755)
-%doc COPYING NEWS.txt README.txt
-%attr(755,root,root) %{_libdir}/libquazip5.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libquazip5.so.1
+%doc COPYING NEWS.txt README.md
+%attr(755,root,root) %{_libdir}/libquazip1-qt5.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libquazip1-qt5.so.1.3
 
 %files qt5-devel
 %defattr(644,root,root,755)
 %doc doc/html
-%attr(755,root,root) %{_libdir}/libquazip5.so
-%{_includedir}/quazip5
-%{_datadir}/cmake/Modules/FindQuaZip5.cmake
+%attr(755,root,root) %{_libdir}/libquazip1-qt5.so
+%{_includedir}/QuaZip-Qt5-1.3
+%{_libdir}/cmake/QuaZip-Qt5-1.3
+%{_pkgconfigdir}/quazip1-qt5.pc
 
+%if 0
 %files qt5-static
 %defattr(644,root,root,755)
 %{_libdir}/libquazip5.a
+%endif
 %endif
