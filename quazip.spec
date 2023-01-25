@@ -11,6 +11,7 @@ Version:	1.3
 Release:	1
 License:	GPL v2+ or LGPL v2+
 Group:		X11/Libraries
+#Source0Download: https://github.com/stachenov/quazip/releases
 Source0:	https://github.com/stachenov/quazip/archive/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	52b45020f8153a45920cd572d777c6a7
 Patch0:		cmake.patch
@@ -19,6 +20,7 @@ BuildRequires:	cmake >= 3.15
 BuildRequires:	doxygen
 BuildRequires:	graphviz
 BuildRequires:	libstdc++-devel >= 6:5
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	zlib-devel
 %if %{with qt4}
 BuildRequires:	QtCore-devel >= 4.5.0
@@ -142,6 +144,18 @@ Static QuaZIP library (Qt 5 version).
 %description qt5-static -l pl.UTF-8
 Statyczna biblioteka QuaZIP (wersja dla Qt 5).
 
+%package apidocs
+Summary:	API documentation for QuaZIP libraries
+Summary(pl.UTF-8):	Dokumentacja API bibliotek QuaZIP
+Group:		Documentation
+BuildArch:	noarch
+
+%description apidocs
+API documentation for QuaZIP libraries.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API bibliotek QuaZIP.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -224,7 +238,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%doc doc/html
 %attr(755,root,root) %{_libdir}/libquazip1-qt4.so
 %{_includedir}/QuaZip-Qt4-1.3
 %{_libdir}/cmake/QuaZip-Qt4-1.3
@@ -246,7 +259,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files qt5-devel
 %defattr(644,root,root,755)
-%doc doc/html
 %attr(755,root,root) %{_libdir}/libquazip1-qt5.so
 %{_includedir}/QuaZip-Qt5-1.3
 %{_libdir}/cmake/QuaZip-Qt5-1.3
@@ -258,3 +270,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libquazip1-qt5.a
 %endif
 %endif
+
+%files apidocs
+%defattr(644,root,root,755)
+%doc doc/html/*.{css,html,js,png}
