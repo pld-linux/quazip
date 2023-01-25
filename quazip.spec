@@ -32,7 +32,6 @@ BuildRequires:	Qt5Core-devel >= 5
 BuildRequires:	qt5-build >= 5
 BuildRequires:	qt5-qmake >= 5
 %endif
-Requires:	QtCore-devel >= 4.5.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -59,32 +58,68 @@ jak i innych na zzipowanych plikach.
 QuaZIP udostępnia pełną abstrakcję API ZIP/UNZIP, zarówno dla odczytu,
 jak i zapisu plikówZIP.
 
-%package devel
+%package qt4
+Summary:	Qt 4/C++ wrapper for the minizip library
+Summary(pl.UTF-8):	Obudowanie Qt 4/C++ do biblioteki minizip
+Group:		X11/Libraries
+Requires:	QtCore >= 4.5.0
+Provides:	quazip = %{version}-%{release}
+Obsoletes:	quazip < 1.3
+
+%description qt4
+QuaZIP is a simple C++ wrapper over Gilles Vollant's ZIP/UNZIP package
+that can be used to access ZIP archives. It uses Trolltech's Qt
+toolkit.
+
+QuaZIP allows you to access files inside ZIP archives using QIODevice
+API, and - yes! - that means that you can also use QTextStream,
+QDataStream or whatever you would like to use on your zipped files.
+
+QuaZIP provides complete abstraction of the ZIP/UNZIP API, for both
+reading from and writing to ZIP archives.
+
+%description qt4 -l pl.UTF-8
+QuaZIP to proste obudowanie C++ dla pakietu ZIP/UNZIP Gillesa
+Vollanta, który może być używany do dostępu do archiwów ZIP. QuaZIP
+wykorzystuje bibliotekę narzędziową Qt firmy Trolltech.
+
+QuaZIP pozwala na dostęp do plików wewnątrz archiwów ZIP przy użyciu
+API QIODevice, co oznacza, że można używać QTextStream, QDataStream,
+jak i innych na zzipowanych plikach.
+
+QuaZIP udostępnia pełną abstrakcję API ZIP/UNZIP, zarówno dla odczytu,
+jak i zapisu plikówZIP.
+
+%package qt4-devel
 Summary:	Development files for QuaZIP (Qt 4 version)
 Summary(pl.UTF-8):	Pliki programistyczne biblioteki QuaZIP (wersja dla Qt 4)
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-qt4 = %{version}-%{release}
 Requires:	QtCore-devel >= 4.5.0
 Requires:	zlib-devel
+Provides:	quazip-devel = %{version}-%{release}
+Obsoletes:	quazip-devel < 1.3
 
-%description devel
+%description qt4-devel
 This package contains the header files and documentation for
 developing applications that use QuaZIP with Qt 4.
 
-%description devel -l pl.UTF-8
+%description qt4-devel -l pl.UTF-8
 Ten pakiet zawiera pliki nagłówkowe oraz dokumentację do tworzenia
 aplikacji wykorzystujących QuaZIP wraz z Qt 4.
 
-%package static
+%package qt4-static
 Summary:	Static QuaZIP library (Qt 4 version)
 Summary(pl.UTF-8):	Statyczna biblioteka QuaZIP (wersja dla Qt 4)
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
+Requires:	%{name}-qt4-devel = %{version}-%{release}
+Provides:	quazip-static = %{version}-%{release}
+Obsoletes:	quazip-static < 1.3
 
-%description static
+%description qt4-static
 Static QuaZIP library (Qt 4 version).
 
-%description static -l pl.UTF-8
+%description qt4-static -l pl.UTF-8
 Statyczna biblioteka QuaZIP (wersja dla Qt 4).
 
 %package qt5
@@ -223,20 +258,20 @@ rm -rf $RPM_BUILD_ROOT
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post	qt4 -p /sbin/ldconfig
+%postun	qt4 -p /sbin/ldconfig
 
 %post	qt5 -p /sbin/ldconfig
 %postun	qt5 -p /sbin/ldconfig
 
 %if %{with qt4}
-%files
+%files qt4
 %defattr(644,root,root,755)
 %doc COPYING NEWS.txt README.md
 %attr(755,root,root) %{_libdir}/libquazip1-qt4.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libquazip1-qt4.so.1.3
 
-%files devel
+%files qt4-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libquazip1-qt4.so
 %{_includedir}/QuaZip-Qt4-1.3
@@ -244,7 +279,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/quazip1-qt4.pc
 
 %if %{with static_libs}
-%files static
+%files qt4-static
 %defattr(644,root,root,755)
 %{_libdir}/libquazip1-qt4.a
 %endif
