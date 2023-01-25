@@ -9,7 +9,7 @@ Summary:	Qt/C++ wrapper for the minizip library
 Summary(pl.UTF-8):	Obudowanie Qt/C++ do biblioteki minizip
 Name:		quazip
 Version:	1.4
-Release:	1
+Release:	2
 License:	GPL v2+ or LGPL v2+
 Group:		X11/Libraries
 #Source0Download: https://github.com/stachenov/quazip/releases
@@ -320,33 +320,33 @@ done
 rm -rf $RPM_BUILD_ROOT
 
 %if %{with qt4}
-%{__make} -C build-qt4 install/fast \
-	DESTDIR=$RPM_BUILD_ROOT
-
 %if %{with static_libs}
 %{__make} -C build-qt4-static install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
 %endif
+
+%{__make} -C build-qt4 install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
 %endif
 
 %if %{with qt5}
-%{__make} -C build-qt5 install/fast \
-	DESTDIR=$RPM_BUILD_ROOT
-
 %if %{with static_libs}
 %{__make} -C build-qt5-static install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
 %endif
+
+%{__make} -C build-qt5 install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
 %endif
 
 %if %{with qt6}
-%{__make} -C build-qt6 install/fast \
-	DESTDIR=$RPM_BUILD_ROOT
-
 %if %{with static_libs}
 %{__make} -C build-qt6-static install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
 %endif
+
+%{__make} -C build-qt6 install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
 %endif
 
 %clean
