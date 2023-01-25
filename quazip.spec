@@ -2,6 +2,7 @@
 # Conditional build:
 %bcond_without	qt4		# Qt 4 version
 %bcond_without	qt5		# Qt 5 version
+%bcond_without	qt6		# Qt 6 version
 %bcond_without	static_libs	# static libraries
 
 Summary:	Qt/C++ wrapper for the minizip library
@@ -31,6 +32,12 @@ BuildRequires:	qt4-qmake >= 4.5.0
 BuildRequires:	Qt5Core-devel >= 5
 BuildRequires:	qt5-build >= 5
 BuildRequires:	qt5-qmake >= 5
+%endif
+%if %{with qt6}
+BuildRequires:	Qt6Core-devel >= 6
+BuildRequires:	Qt6Qt5Compat-devel >= 6
+BuildRequires:	qt6-build >= 6
+BuildRequires:	qt6-qmake >= 6
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -179,6 +186,63 @@ Static QuaZIP library (Qt 5 version).
 %description qt5-static -l pl.UTF-8
 Statyczna biblioteka QuaZIP (wersja dla Qt 5).
 
+%package qt6
+Summary:	Qt 6/C++ wrapper for the minizip library
+Summary(pl.UTF-8):	Obudowanie Qt 6/C++ do biblioteki minizip
+Group:		X11/Libraries
+
+%description qt6
+QuaZIP is a simple C++ wrapper over Gilles Vollant's ZIP/UNZIP package
+that can be used to access ZIP archives. It uses Trolltech's Qt
+toolkit.
+
+QuaZIP allows you to access files inside ZIP archives using QIODevice
+API, and - yes! - that means that you can also use QTextStream,
+QDataStream or whatever you would like to use on your zipped files.
+
+QuaZIP provides complete abstraction of the ZIP/UNZIP API, for both
+reading from and writing to ZIP archives.
+
+%description qt6 -l pl.UTF-8
+QuaZIP to proste obudowanie C++ dla pakietu ZIP/UNZIP Gillesa
+Vollanta, który może być używany do dostępu do archiwów ZIP. QuaZIP
+wykorzystuje bibliotekę narzędziową Qt firmy Trolltech.
+
+QuaZIP pozwala na dostęp do plików wewnątrz archiwów ZIP przy użyciu
+API QIODevice, co oznacza, że można używać QTextStream, QDataStream,
+jak i innych na zzipowanych plikach.
+
+QuaZIP udostępnia pełną abstrakcję API ZIP/UNZIP, zarówno dla odczytu,
+jak i zapisu plikówZIP.
+
+%package qt6-devel
+Summary:	Development files for QuaZIP (Qt 6 version)
+Summary(pl.UTF-8):	Pliki programistyczne biblioteki QuaZIP (wersja dla Qt 6)
+Group:		Development/Libraries
+Requires:	%{name}-qt6 = %{version}-%{release}
+Requires:	Qt6Core-devel >= 6
+Requires:	zlib-devel
+
+%description qt6-devel
+This package contains the header files and documentation for
+developing applications that use QuaZIP with Qt 6.
+
+%description qt6-devel -l pl.UTF-8
+Ten pakiet zawiera pliki nagłówkowe oraz dokumentację do tworzenia
+aplikacji wykorzystujących QuaZIP wraz z Qt 56
+
+%package qt6-static
+Summary:	Static QuaZIP library (Qt 6 version)
+Summary(pl.UTF-8):	Statyczna biblioteka QuaZIP (wersja dla Qt 6)
+Group:		Development/Libraries
+Requires:	%{name}-qt6-devel = %{version}-%{release}
+
+%description qt6-static
+Static QuaZIP library (Qt 6 version).
+
+%description qt6-static -l pl.UTF-8
+Statyczna biblioteka QuaZIP (wersja dla Qt 6).
+
 %package apidocs
 Summary:	API documentation for QuaZIP libraries
 Summary(pl.UTF-8):	Dokumentacja API bibliotek QuaZIP
@@ -227,6 +291,21 @@ export CXXFLAGS="%{rpmcxxflags} -fPIC"
 %endif
 %endif
 
+%if %{with qt6}
+%cmake -B build-qt6 \
+	-DQUAZIP_QT_MAJOR_VERSION=6
+
+%{__make} -C build-qt6
+
+%if %{with static_libs}
+%cmake -B build-qt6-static \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DQUAZIP_QT_MAJOR_VERSION=6
+
+%{__make} -C build-qt6-static
+%endif
+%endif
+
 doxygen Doxyfile
 for file in doc/html/*; do
 	touch -r Doxyfile $file
@@ -255,6 +334,16 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%if %{with qt6}
+%{__make} -C build-qt6 install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
+
+%if %{with static_libs}
+%{__make} -C build-qt6-static install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
+%endif
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -263,6 +352,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	qt5 -p /sbin/ldconfig
 %postun	qt5 -p /sbin/ldconfig
+
+%post	qt6 -p /sbin/ldconfig
+%postun	qt6 -p /sbin/ldconfig
 
 %if %{with qt4}
 %files qt4
@@ -303,6 +395,27 @@ rm -rf $RPM_BUILD_ROOT
 %files qt5-static
 %defattr(644,root,root,755)
 %{_libdir}/libquazip1-qt5.a
+%endif
+%endif
+
+%if %{with qt6}
+%files qt6
+%defattr(644,root,root,755)
+%doc COPYING NEWS.txt README.md
+%attr(755,root,root) %{_libdir}/libquazip1-qt6.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libquazip1-qt6.so.1.3
+
+%files qt6-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libquazip1-qt6.so
+%{_includedir}/QuaZip-Qt6-1.3
+%{_libdir}/cmake/QuaZip-Qt6-1.3
+%{_pkgconfigdir}/quazip1-qt6.pc
+
+%if %{with static_libs}
+%files qt6-static
+%defattr(644,root,root,755)
+%{_libdir}/libquazip1-qt6.a
 %endif
 %endif
 
