@@ -1,10 +1,8 @@
-# TODO:
-# - test or remove Qt 4 version
-# - compile static library if needed
 #
 # Conditional build:
-%bcond_with	qt4		# Qt 4 version
+%bcond_without	qt4		# Qt 4 version
 %bcond_without	qt5		# Qt 5 version
+%bcond_without	static_libs	# static libraries
 
 Summary:	Qt/C++ wrapper for the minizip library
 Summary(pl.UTF-8):	Obudowanie Qt/C++ do biblioteki minizip
@@ -20,7 +18,7 @@ URL:		https://stachenov.github.io/quazip/
 BuildRequires:	cmake >= 3.15
 BuildRequires:	doxygen
 BuildRequires:	graphviz
-BuildRequires:	libstdc++-devel
+BuildRequires:	libstdc++-devel >= 6:5
 BuildRequires:	zlib-devel
 %if %{with qt4}
 BuildRequires:	QtCore-devel >= 4.5.0
@@ -65,6 +63,7 @@ Summary(pl.UTF-8):	Pliki programistyczne biblioteki QuaZIP (wersja dla Qt 4)
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	QtCore-devel >= 4.5.0
+Requires:	zlib-devel
 
 %description devel
 This package contains the header files and documentation for
@@ -121,6 +120,7 @@ Summary(pl.UTF-8):	Pliki programistyczne biblioteki QuaZIP (wersja dla Qt 5)
 Group:		Development/Libraries
 Requires:	%{name}-qt5 = %{version}-%{release}
 Requires:	Qt5Core-devel >= 5
+Requires:	zlib-devel
 
 %description qt5-devel
 This package contains the header files and documentation for
@@ -147,24 +147,35 @@ Statyczna biblioteka QuaZIP (wersja dla Qt 5).
 %patch0 -p1
 
 %build
-install -d build-qt{4,5}
-%if %{with qt4}
-cd build-qt4
 export CXXFLAGS="%{rpmcxxflags} -fPIC"
-%cmake \
-	-DBUILD_WITH_QT4:BOOL=ON \
-	..
-%{__make}
-cd ..
+%if %{with qt4}
+%cmake -B build-qt4 \
+	-DQUAZIP_QT_MAJOR_VERSION=4
+
+%{__make} -C build-qt4
+
+%if %{with static_libs}
+%cmake -B build-qt4-static \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DQUAZIP_QT_MAJOR_VERSION=4
+
+%{__make} -C build-qt4-static
+%endif
 %endif
 
 %if %{with qt5}
-cd build-qt5
-%cmake \
-	-DBUILD_WITH_QT4:BOOL=OFF \
-	..
-%{__make}
-cd ..
+%cmake -B build-qt5 \
+	-DQUAZIP_QT_MAJOR_VERSION=5
+
+%{__make} -C build-qt5
+
+%if %{with static_libs}
+%cmake -B build-qt5-static \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DQUAZIP_QT_MAJOR_VERSION=5
+
+%{__make} -C build-qt5-static
+%endif
 %endif
 
 doxygen Doxyfile
@@ -174,13 +185,25 @@ done
 
 %install
 rm -rf $RPM_BUILD_ROOT
+
 %if %{with qt4}
 %{__make} -C build-qt4 install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
+
+%if %{with static_libs}
+%{__make} -C build-qt4-static install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
 %endif
+%endif
+
 %if %{with qt5}
 %{__make} -C build-qt5 install/fast \
 	DESTDIR=$RPM_BUILD_ROOT
+
+%if %{with static_libs}
+%{__make} -C build-qt5-static install/fast \
+	DESTDIR=$RPM_BUILD_ROOT
+%endif
 %endif
 
 %clean
@@ -207,9 +230,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/cmake/QuaZip-Qt4-1.3
 %{_pkgconfigdir}/quazip1-qt4.pc
 
+%if %{with static_libs}
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/libquazip.a
+%{_libdir}/libquazip1-qt4.a
+%endif
 %endif
 
 %if %{with qt5}
@@ -227,9 +252,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/cmake/QuaZip-Qt5-1.3
 %{_pkgconfigdir}/quazip1-qt5.pc
 
-%if 0
+%if %{with static_libs}
 %files qt5-static
 %defattr(644,root,root,755)
-%{_libdir}/libquazip5.a
+%{_libdir}/libquazip1-qt5.a
 %endif
 %endif
