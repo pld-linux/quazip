@@ -262,7 +262,7 @@ Dokumentacja API bibliotek QuaZIP.
 
 %prep
 %setup -q
-%patch0 -p1
+%patch -P0 -p1
 
 %build
 export CXXFLAGS="%{rpmcxxflags} -fPIC"
